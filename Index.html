@@ -74,27 +74,42 @@
                 <button onclick="runCiphercate(false)" class="flex-1 bg-neutral-800 text-gray-300 py-2 rounded text-sm hover:bg-neutral-700">De-obfuscate</button>
             </div>
         </div>
+
+        <!-- About Panel -->
+        <div id="panel-about" class="hidden">
+            <h2 class="text-white text-lg font-medium mb-4">About Onyx</h2>
+            <p class="text-sm text-gray-400 mb-4">I started this journey because I found that existing security tools didn't offer the robust protection I required for my specific workflow. Every tool I encountered seemed to miss the mark, lacking the precision and reliability that I demand from software.</p>
+            <p class="text-sm text-gray-400 mb-4">It became clear that if I wanted a tool that truly served my needs, I would have to build it from the ground up myself. I spent countless hours designing the logic, ensuring that every layer of the system was built with security and speed in mind.</p>
+            <p class="text-sm text-gray-400 mb-4">That is when I decided to create Onyx. I chose the name because it represents a solid, secure foundation—the kind of base that I need for my code to function without compromising safety.</p>
+            <p class="text-sm text-gray-400 mb-4">Onyx is more than just a toolkit; it is a manifestation of the standards I hold for my own work. By building it myself, I have full visibility and control over how the information is handled, ensuring nothing is left to chance.</p>
+            <p class="text-sm text-gray-400 mb-4">This system is meant to be a reliable partner for my development tasks, providing the layer of security that others simply couldn't offer. Hex: #0f0f0f. (put cat for the text and key in cipher)</p>
+            <button onclick="switchTab('cipher')" class="mt-4 w-full bg-[#333] text-white py-2 rounded text-sm hover:bg-[#444]">Back to Toolset</button>
+        </div>
     </div>
 
     <footer class="mt-10 text-center text-gray-600 text-xs">
         <p>Made by Terrenz Monyok</p>
-        <p><a href="#" onclick="showAbout()" class="text-blue-500 hover:underline">About Onyx</a></p>
+        <p><a href="#" onclick="switchTab('about')" class="text-blue-500 hover:underline">About Onyx</a></p>
     </footer>
 
     <script>
-        function showAbout() {
-            alert("About Onyx:\n\nAfter looking at many other security tools and realizing they lacked the level of protection I required, I decided to build my own system. I named it Onyx to represent a solid, secure foundation for my code.\n\nHex: #0f0f0f\n\n(put cat for the text and key in cipher)");
-        }
-        
         function switchTab(tab) {
-            ['cipher', 'nwb', 'comp', 'ciphercate'].forEach(t => {
-                document.getElementById('panel-' + t).classList.add('hidden');
-                document.getElementById('btn-' + t).classList.replace('border-white', 'border-transparent');
-                document.getElementById('btn-' + t).classList.replace('text-white', 'text-gray-300');
+            ['cipher', 'nwb', 'comp', 'ciphercate', 'about'].forEach(t => {
+                const p = document.getElementById('panel-' + t);
+                if(p) p.classList.add('hidden');
+                const btn = document.getElementById('btn-' + t);
+                if(btn) {
+                    btn.classList.replace('border-white', 'border-transparent');
+                    btn.classList.replace('text-white', 'text-gray-300');
+                }
             });
-            document.getElementById('panel-' + tab).classList.remove('hidden');
-            document.getElementById('btn-' + tab).classList.replace('border-transparent', 'border-white');
-            document.getElementById('btn-' + tab).classList.replace('text-gray-300', 'text-white');
+            const activePanel = document.getElementById('panel-' + tab);
+            if(activePanel) activePanel.classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tab);
+            if(activeBtn) {
+                activeBtn.classList.replace('border-transparent', 'border-white');
+                activeBtn.classList.replace('text-gray-300', 'text-white');
+            }
         }
 
         function utf16ToUint8(str) {
@@ -134,7 +149,7 @@
                 if (!document.getElementById('egg')) {
                     const img = document.createElement('img');
                     img.id = 'egg';
-                    img.src = 'https://i.ibb.co/L5p0G8R/IMG-0041.jpg';
+                    img.src = 'https://i.ibb.co/3s6Kq56/IMG-0041.jpg'; // Correct link provided
                     img.className = 'easter-egg';
                     document.body.appendChild(img);
                 }
