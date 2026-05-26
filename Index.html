@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onyx Toolset</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .easter-egg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: auto;
+            animation: popIn 0.5s ease-out;
+            z-index: 1000;
+        }
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-[#0f0f0f] min-h-screen font-sans text-gray-300 p-4 md:p-10 flex flex-col items-center">
+    <div class="max-w-2xl w-full bg-[#1a1a1a] p-6 rounded-lg border border-[#333]">
+        <h1 class="text-xl font-medium text-white mb-6">Onyx Toolkit</h1>
+        
+        <div class="flex border-b border-[#333] mb-6 overflow-x-auto">
+            <button onclick="switchTab('cipher')" id="btn-cipher" class="px-4 py-2 text-sm border-b-2 border-white text-white">Cipher</button>
+            <button onclick="switchTab('nwb')" id="btn-nwb" class="px-4 py-2 text-sm border-b-2 border-transparent hover:border-[#555]">NWB</button>
+            <button onclick="switchTab('comp')" id="btn-comp" class="px-4 py-2 text-sm border-b-2 border-transparent hover:border-[#555]">Compressor</button>
+            <button onclick="switchTab('ciphercate')" id="btn-ciphercate" class="px-4 py-2 text-sm border-b-2 border-transparent hover:border-[#555]">Ciphercate</button>
+        </div>
+
+        <!-- Cipher Panel -->
+        <div id="panel-cipher">
+            <textarea id="io" class="w-full h-32 p-3 bg-[#262626] border border-[#444] rounded text-sm text-gray-100 mb-2" placeholder="Text (any language)..."></textarea>
+            <button onclick="copyToClipboard('io')" class="w-full mb-4 px-3 py-1 bg-[#333] hover:bg-[#444] rounded text-xs transition">Copy Output</button>
+            <div class="flex gap-2 mb-4">
+                <input type="password" id="key" class="flex-1 p-2 bg-[#262626] border border-[#444] rounded text-sm" placeholder="Key">
+                <button onclick="copyToClipboard('key')" class="px-3 bg-[#333] hover:bg-[#444] rounded text-xs transition">Copy</button>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="cipher(true)" class="flex-1 bg-gray-700 text-white py-2 rounded text-sm hover:bg-gray-600">Obfuscate</button>
+                <button onclick="cipher(false)" class="flex-1 bg-neutral-800 text-gray-300 py-2 rounded text-sm hover:bg-neutral-700">De-obfuscate</button>
+            </div>
+        </div>
+
+        <!-- NWB Panel -->
+        <div id="panel-nwb" class="hidden">
+            <p class="text-xs text-gray-500 mb-4">Recursive 10-layer deep cryptographic obfuscation.</p>
+            <textarea id="nwb-io" class="w-full h-32 p-3 bg-[#262626] border border-[#444] rounded text-sm text-gray-100 mb-2" placeholder="Text to lock..."></textarea>
+            <button onclick="copyToClipboard('nwb-io')" class="w-full mb-4 px-3 py-1 bg-[#333] hover:bg-[#444] rounded text-xs transition">Copy Output</button>
+            <div class="flex gap-2 mb-4">
+                <input type="password" id="nwb-key" class="flex-1 p-2 bg-[#262626] border border-[#444] rounded text-sm" placeholder="Master Key">
+                <button onclick="copyToClipboard('nwb-key')" class="px-3 bg-[#333] hover:bg-[#444] rounded text-xs transition">Copy</button>
+            </div>
+            <button onclick="runNWB()" class="w-full bg-red-900 text-white py-2 rounded text-sm hover:bg-red-800">Activate NWB & Export Keys</button>
+        </div>
+
+        <!-- Compressor Panel -->
+        <div id="panel-comp" class="hidden">
+            <input type="text" id="comp-in" class="w-full p-3 bg-[#262626] border border-[#444] rounded text-sm text-gray-100 mb-4" placeholder="Enter key to compress...">
+            <button onclick="runCompress()" class="w-full bg-gray-700 text-white py-2 rounded text-sm hover:bg-gray-600 mb-4">Compress Key</button>
+            <input type="text" id="comp-out" class="w-full p-2 bg-[#0f0f0f] border border-[#333] rounded text-sm font-mono text-gray-400" readonly>
+        </div>
+
+        <!-- Ciphercate Panel -->
+        <div id="panel-ciphercate" class="hidden">
+            <textarea id="ciphercate-io" class="w-full h-32 p-3 bg-[#262626] border border-[#444] rounded text-sm text-gray-100 mb-2" placeholder="Paste code..."></textarea>
+            <button onclick="copyToClipboard('ciphercate-io')" class="w-full mb-4 px-3 py-1 bg-[#333] hover:bg-[#444] rounded text-xs transition">Copy Output</button>
+            <div class="flex gap-2">
+                <button onclick="runCiphercate(true)" class="flex-1 bg-blue-900 text-white py-2 rounded text-sm hover:bg-blue-800">Obfuscate</button>
+                <button onclick="runCiphercate(false)" class="flex-1 bg-neutral-800 text-gray-300 py-2 rounded text-sm hover:bg-neutral-700">De-obfuscate</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-10 text-center text-gray-600 text-xs">
+        <p>Made by Terrenz Monyok</p>
+        <p><a href="#" onclick="showAbout()" class="text-blue-500 hover:underline">About Onyx</a></p>
+    </footer>
+
+    <script>
+        function showAbout() {
+            alert("About Onyx:\n\nAfter looking at many other security tools and realizing they lacked the level of protection I required, I decided to build my own system. I named it Onyx to represent a solid, secure foundation for my code.\n\nHex: #0f0f0f\n\n(put cat for the text and key in cipher)");
+        }
+        
+        function switchTab(tab) {
+            ['cipher', 'nwb', 'comp', 'ciphercate'].forEach(t => {
+                document.getElementById('panel-' + t).classList.add('hidden');
+                document.getElementById('btn-' + t).classList.replace('border-white', 'border-transparent');
+                document.getElementById('btn-' + t).classList.replace('text-white', 'text-gray-300');
+            });
+            document.getElementById('panel-' + tab).classList.remove('hidden');
+            document.getElementById('btn-' + tab).classList.replace('border-transparent', 'border-white');
+            document.getElementById('btn-' + tab).classList.replace('text-gray-300', 'text-white');
+        }
+
+        function utf16ToUint8(str) {
+            const buf = new ArrayBuffer(str.length * 2);
+            const view = new Uint16Array(buf);
+            for (let i = 0; i < str.length; i++) view[i] = str.charCodeAt(i);
+            return new Uint8Array(buf);
+        }
+
+        function uint8ToUtf16(bytes) {
+            const view = new Uint16Array(bytes.buffer);
+            return String.fromCharCode(...view);
+        }
+
+        function rawCipher(text, key, mode) {
+            if (mode) {
+                let bytes = utf16ToUint8(text);
+                for (let i = 0; i < bytes.length; i++) {
+                    bytes[i] = bytes[i] ^ (key.charCodeAt(i % key.length) % 256);
+                }
+                return btoa(String.fromCharCode(...bytes)).split('').reverse().join('').replace(/=/g, 'z');
+            } else {
+                let bytes = new Uint8Array(atob(text.replace(/z/g, '=').split('').reverse().join('')).split('').map(c => c.charCodeAt(0)));
+                for (let i = 0; i < bytes.length; i++) {
+                    bytes[i] = bytes[i] ^ (key.charCodeAt(i % key.length) % 256);
+                }
+                return uint8ToUtf16(bytes);
+            }
+        }
+
+        function cipher(isEncrypt) {
+            const io = document.getElementById('io');
+            const key = document.getElementById('key').value;
+            
+            // Easter Egg Logic
+            if (isEncrypt && io.value === "cat" && key === "cat") {
+                if (!document.getElementById('egg')) {
+                    const img = document.createElement('img');
+                    img.id = 'egg';
+                    img.src = 'https://i.ibb.co/L5p0G8R/IMG-0041.jpg';
+                    img.className = 'easter-egg';
+                    document.body.appendChild(img);
+                }
+            }
+
+            try { io.value = rawCipher(io.value, key, isEncrypt); } catch(e) { io.value = "Error: Invalid Input."; }
+        }
+
+        async function getDerivationKey(masterKey, layer) {
+            const data = new TextEncoder().encode(masterKey + ":" + layer);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function runNWB() {
+            let text = document.getElementById('nwb-io').value;
+            const masterKey = document.getElementById('nwb-key').value;
+            if (!masterKey) return alert("Key required");
+
+            let csvContent = "Layer,DerivedKey\n";
+            for(let i=0; i<10; i++) {
+                let currentKey = await getDerivationKey(masterKey, i);
+                text = rawCipher(text, currentKey, true);
+                csvContent += (i+1) + "," + currentKey + "\n";
+            }
+            document.getElementById('nwb-io').value = text;
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'nwb_keys.csv';
+            a.click();
+        }
+
+        async function runCompress() {
+            const input = document.getElementById('comp-in').value;
+            const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+            document.getElementById('comp-out').value = base64.substring(0, 48);
+        }
+
+        function b64EncodeUnicode(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+        }
+
+        function b64DecodeUnicode(str) {
+            return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        }
+
+        function runCiphercate(isObf) {
+            const io = document.getElementById('ciphercate-io');
+            if(isObf) {
+                const junk = "var _x" + Math.floor(Math.random()*1000) + "=true;";
+                io.value = `(function(){${junk}var _d='${b64EncodeUnicode(io.value)}';var _s=decodeURIComponent(escape(atob(_d)));eval(_s);})();`;
+            } else {
+                try {
+                    const match = io.value.match(/var _d='(.*?)'/);
+                    if(match) io.value = b64DecodeUnicode(match[1]);
+                } catch(e) { io.value = "Invalid Ciphercate format."; }
+            }
+        }
+        
+        function copyToClipboard(elementId) { document.getElementById(elementId).select(); document.execCommand("copy"); }
+    </script>
+</body>
+</html>
